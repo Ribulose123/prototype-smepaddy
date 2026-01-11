@@ -1,4 +1,4 @@
-import { Plus, TrendingUp, TrendingDown, Users, Package, FileText, Zap, ArrowRight, Sparkles, Clock, AlertCircle } from 'lucide-react';
+import { Plus, TrendingUp, TrendingDown, Users, Package, FileText, Zap, ArrowRight, Sparkles, Clock, AlertCircle, Calendar } from 'lucide-react';
 import { useState } from 'react';
 import { RecordSale } from './RecordSale';
 import { NetworkGridPattern } from './NetworkGridPattern';
@@ -7,14 +7,74 @@ import { PaddyCoinBadge } from './PaddyCoinBadge';
 interface HomePageProps {
   paddyCoins?: number;
   currentStreak?: number;
+  onNavigate?: (page: 'transactions' | 'stock' | 'loans') => void;
 }
 
-export function HomePage({ paddyCoins, currentStreak }: HomePageProps = {}) {
+// Data for different time periods
+const dailyData = {
+  moneyIn: 72000,
+  moneyOut: 17000
+};
+
+const weeklyData = {
+  moneyIn: 371000,
+  moneyOut: 77000
+};
+
+const monthlyData = {
+  moneyIn: 1210000,
+  moneyOut: 350000
+};
+
+const yearlyData = {
+  moneyIn: 13160000,
+  moneyOut: 4145000
+};
+
+export function HomePage({ paddyCoins, currentStreak, onNavigate }: HomePageProps = {}) {
   const [showRecordSale, setShowRecordSale] = useState(false);
+  const [dateFilter, setDateFilter] = useState<'daily' | 'weekly' | 'monthly' | 'yearly' | 'custom'>('monthly');
+  const [showCustomDatePicker, setShowCustomDatePicker] = useState(false);
+  const [customStartDate, setCustomStartDate] = useState('');
+  const [customEndDate, setCustomEndDate] = useState('');
   
   // Mock Paddy Coin data (in real app, fetch from state/API)
   const userCoins = paddyCoins ?? 245;
   const totalCoinsEarned = 450;
+
+  // Get current data based on date filter
+  let currentData;
+  
+  if (dateFilter === 'daily') {
+    currentData = dailyData;
+  } else if (dateFilter === 'weekly') {
+    currentData = weeklyData;
+  } else if (dateFilter === 'monthly') {
+    currentData = monthlyData;
+  } else if (dateFilter === 'yearly') {
+    currentData = yearlyData;
+  } else {
+    // Custom date - use monthly data as placeholder
+    currentData = monthlyData;
+  }
+
+  const totalMoneyIn = currentData.moneyIn;
+  const totalMoneyOut = currentData.moneyOut;
+  const netBalance = totalMoneyIn - totalMoneyOut;
+
+  // Get period label
+  const getPeriodLabel = () => {
+    if (dateFilter === 'daily') return 'Today';
+    if (dateFilter === 'weekly') return 'This Week';
+    if (dateFilter === 'monthly') return 'This Month';
+    if (dateFilter === 'yearly') return 'This Year';
+    if (dateFilter === 'custom' && customStartDate && customEndDate) {
+      return `${customStartDate} to ${customEndDate}`;
+    }
+    return 'Custom Range';
+  };
+
+  const periodLabel = getPeriodLabel();
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24 lg:pb-0">
@@ -35,8 +95,105 @@ export function HomePage({ paddyCoins, currentStreak }: HomePageProps = {}) {
           {/* Balance Card - Desktop Grid */}
           <div className="grid lg:grid-cols-3 gap-4 lg:gap-6">
             <div className="lg:col-span-2 bg-white/95 backdrop-blur rounded-2xl p-5 lg:p-6 shadow-lg">
-              <p className="text-gray-600 text-sm lg:text-base mb-1">Total Money In My Business</p>
-              <h2 className="text-blue-700 text-3xl lg:text-4xl mb-4 lg:mb-6">₦487,500</h2>
+              {/* Date Filter */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                <button
+                  onClick={() => {
+                    setDateFilter('daily');
+                    setShowCustomDatePicker(false);
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-xs lg:text-sm font-medium transition-colors ${
+                    dateFilter === 'daily'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  Daily
+                </button>
+                <button
+                  onClick={() => {
+                    setDateFilter('weekly');
+                    setShowCustomDatePicker(false);
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-xs lg:text-sm font-medium transition-colors ${
+                    dateFilter === 'weekly'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  Weekly
+                </button>
+                <button
+                  onClick={() => {
+                    setDateFilter('monthly');
+                    setShowCustomDatePicker(false);
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-xs lg:text-sm font-medium transition-colors ${
+                    dateFilter === 'monthly'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  Monthly
+                </button>
+                <button
+                  onClick={() => {
+                    setDateFilter('yearly');
+                    setShowCustomDatePicker(false);
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-xs lg:text-sm font-medium transition-colors ${
+                    dateFilter === 'yearly'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  Yearly
+                </button>
+                <button
+                  onClick={() => {
+                    setDateFilter('custom');
+                    setShowCustomDatePicker(true);
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-xs lg:text-sm font-medium transition-colors flex items-center gap-1 ${
+                    dateFilter === 'custom'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  <Calendar className="w-3 h-3 lg:w-4 lg:h-4" />
+                  <span>Custom</span>
+                </button>
+              </div>
+
+              {/* Custom Date Picker */}
+              {showCustomDatePicker && (
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-4">
+                  <p className="text-xs text-blue-800 mb-2 font-medium">Select Date Range</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-xs text-blue-700 mb-1">Start Date</label>
+                      <input
+                        type="date"
+                        value={customStartDate}
+                        onChange={(e) => setCustomStartDate(e.target.value)}
+                        className="w-full px-2 py-1.5 rounded-lg border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-blue-700 mb-1">End Date</label>
+                      <input
+                        type="date"
+                        value={customEndDate}
+                        onChange={(e) => setCustomEndDate(e.target.value)}
+                        className="w-full px-2 py-1.5 rounded-lg border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <p className="text-gray-600 text-sm lg:text-base mb-1">Total Money In My Business - {periodLabel}</p>
+              <h2 className="text-blue-700 text-3xl lg:text-4xl mb-4 lg:mb-6">₦{netBalance.toLocaleString()}</h2>
               
               <div className="grid grid-cols-2 gap-3 lg:gap-4">
                 <div className="bg-green-50 rounded-xl p-3 lg:p-4">
@@ -44,7 +201,7 @@ export function HomePage({ paddyCoins, currentStreak }: HomePageProps = {}) {
                     <TrendingUp className="w-4 h-4 lg:w-5 lg:h-5 text-green-600" />
                     <span className="text-xs lg:text-sm text-gray-600">Money In</span>
                   </div>
-                  <p className="text-green-700 text-xl lg:text-2xl font-bold">₦520,000</p>
+                  <p className="text-green-700 text-xl lg:text-2xl font-bold">₦{totalMoneyIn.toLocaleString()}</p>
                 </div>
                 
                 <div className="bg-red-50 rounded-xl p-3 lg:p-4">
@@ -52,7 +209,7 @@ export function HomePage({ paddyCoins, currentStreak }: HomePageProps = {}) {
                     <TrendingDown className="w-4 h-4 lg:w-5 lg:h-5 text-red-600" />
                     <span className="text-xs lg:text-sm text-gray-600">Money Out</span>
                   </div>
-                  <p className="text-red-700 text-xl lg:text-2xl font-bold">₦32,500</p>
+                  <p className="text-red-700 text-xl lg:text-2xl font-bold">₦{totalMoneyOut.toLocaleString()}</p>
                 </div>
               </div>
             </div>
@@ -113,7 +270,12 @@ export function HomePage({ paddyCoins, currentStreak }: HomePageProps = {}) {
                 <p className="text-blue-700 text-2xl lg:text-3xl font-bold mb-1">₦45,000</p>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">3 customers</span>
-                  <button className="text-blue-600 hover:text-blue-700 font-medium">View All →</button>
+                  <button 
+                    onClick={() => onNavigate?.('loans')}
+                    className="text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    View All →
+                  </button>
                 </div>
               </div>
             </div>
@@ -131,7 +293,12 @@ export function HomePage({ paddyCoins, currentStreak }: HomePageProps = {}) {
                 <p className="text-orange-700 text-2xl lg:text-3xl font-bold mb-1">₦12,500</p>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">2 suppliers</span>
-                  <button className="text-blue-600 hover:text-blue-700 font-medium">View All →</button>
+                  <button 
+                    onClick={() => onNavigate?.('loans')}
+                    className="text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    View All →
+                  </button>
                 </div>
               </div>
             </div>
@@ -148,7 +315,12 @@ export function HomePage({ paddyCoins, currentStreak }: HomePageProps = {}) {
               <div className="mt-4">
                 <p className="text-red-700 text-2xl lg:text-3xl font-bold mb-1">5 items</p>
                 <div className="flex justify-end text-sm">
-                  <button className="text-blue-600 hover:text-blue-700 font-medium">View All →</button>
+                  <button 
+                    onClick={() => onNavigate?.('stock')}
+                    className="text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    View All →
+                  </button>
                 </div>
               </div>
             </div>
@@ -158,7 +330,12 @@ export function HomePage({ paddyCoins, currentStreak }: HomePageProps = {}) {
           <div>
             <div className="flex items-center justify-between mb-4 lg:mb-6">
               <h3 className="text-gray-800 text-lg lg:text-xl">Recent Sales</h3>
-              <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">View All</button>
+              <button 
+                onClick={() => onNavigate?.('transactions')}
+                className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+              >
+                View All
+              </button>
             </div>
             
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">

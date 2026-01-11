@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { TrendingUp, TrendingDown, Users, AlertTriangle, Plus, FileText } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
-import { RecordSaleModal } from './modal/RecordSaleModal';
-import { AddItemModal } from './modal/AddItemModal';
+import { RecordSaleModal } from './RecordSaleModal';
+import { AddItemModal } from './AddItemModal';
 
 interface DashboardProps {
   onNavigate: (page: 'home' | 'sales' | 'items' | 'invoices' | 'summary' | 'settings') => void;

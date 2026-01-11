@@ -51,4 +51,3 @@ export function Tooltip({ content, position = 'top' }: TooltipProps) {
     </div>
   );
 }
-

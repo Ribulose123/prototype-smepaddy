@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 interface AmountInputProps {
   value: string;
@@ -61,4 +61,3 @@ export function AmountInput({ value, onChange, placeholder = "0", className = ""
     />
   );
 }
-

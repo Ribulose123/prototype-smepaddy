@@ -505,4 +505,3 @@ export function AdminBusinessCategoriesPage({ role }: AdminBusinessCategoriesPag
     </div>
   );
 }
-

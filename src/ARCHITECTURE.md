@@ -1,8 +1,8 @@
 # System Architecture Document
 ## SME Paddy - Technical Architecture & Design
 
-**Version:** 1.0  
-**Last Updated:** December 15, 2024  
+**Version:** 2.0  
+**Last Updated:** January 7, 2026  
 **Document Owner:** Engineering Team  
 **Status:** Active Development
 
@@ -298,6 +298,16 @@ User Device (Mobile Browser/PWA)
 │   │   └── /coins
 │   │       ├── PaddyCoinBadge.tsx
 │   │       └── CoinHistoryModal.tsx
+│   ├── /admin            # Admin portal components
+│   │   ├── AdminLayout.tsx
+│   │   ├── AdminAuthPage.tsx
+│   │   ├── AdminDashboardPage.tsx
+│   │   ├── AdminUsersPage.tsx
+│   │   ├── AdminTransactionsPage.tsx
+│   │   ├── AdminGamificationPage.tsx
+│   │   ├── AdminSupportPage.tsx
+│   │   ├── AdminBusinessCategoriesPage.tsx
+│   │   └── AdminSettingsPage.tsx
 │   ├── /pages            # Top-level page components
 │   │   ├── HomePage.tsx
 │   │   ├── TransactionsPage.tsx
@@ -305,7 +315,10 @@ User Device (Mobile Browser/PWA)
 │   │   ├── InvoicesPage.tsx
 │   │   ├── LoansPage.tsx
 │   │   ├── SettingsPage.tsx
-│   │   └── ReportsPage.tsx
+│   │   ├── ReportsPage.tsx
+│   │   └── MorePage.tsx
+│   ├── SupportTicketModal.tsx  # Support ticket submission
+│   ├── HelpButton.tsx          # Floating help button (desktop)
 │   └── /layout
 │       ├── BottomNav.tsx
 │       ├── Sidebar.tsx
@@ -716,6 +729,107 @@ CREATE TABLE user_streaks (
 CREATE INDEX idx_streak_user ON user_streaks(user_id);
 ```
 
+#### Support Tickets Table
+```sql
+CREATE TABLE support_tickets (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  ticket_number VARCHAR(50) UNIQUE NOT NULL, -- TKT-YYYY-XXX format
+  user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  business_name VARCHAR(255) NOT NULL,
+  owner_name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  
+  -- Ticket Details
+  subject VARCHAR(500) NOT NULL,
+  category VARCHAR(100) NOT NULL, -- technical, billing, loan, account, feature, training, other
+  priority VARCHAR(20) NOT NULL, -- low, medium, high, urgent
+  status VARCHAR(50) DEFAULT 'open', -- open, in_progress, resolved, closed
+  message TEXT NOT NULL,
+  
+  -- Assignment & Tracking
+  assigned_to UUID REFERENCES admin_users(id) ON DELETE SET NULL,
+  resolved_at TIMESTAMP,
+  closed_at TIMESTAMP,
+  
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_ticket_user ON support_tickets(user_id);
+CREATE INDEX idx_ticket_status ON support_tickets(status);
+CREATE INDEX idx_ticket_priority ON support_tickets(priority);
+CREATE INDEX idx_ticket_assigned ON support_tickets(assigned_to);
+CREATE INDEX idx_ticket_created ON support_tickets(created_at DESC);
+```
+
+#### Ticket Replies Table
+```sql
+CREATE TABLE ticket_replies (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  ticket_id UUID REFERENCES support_tickets(id) ON DELETE CASCADE,
+  from_user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  from_admin_id UUID REFERENCES admin_users(id) ON DELETE SET NULL,
+  message TEXT NOT NULL,
+  is_admin_reply BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_reply_ticket ON ticket_replies(ticket_id);
+CREATE INDEX idx_reply_created ON ticket_replies(created_at DESC);
+```
+
+#### Business Categories Table
+```sql
+CREATE TABLE business_categories (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  value VARCHAR(100) UNIQUE NOT NULL, -- URL-safe identifier (e.g., 'real-estate')
+  label VARCHAR(255) NOT NULL, -- Display name (e.g., 'Real Estate & Property')
+  is_active BOOLEAN DEFAULT TRUE,
+  usage_count INTEGER DEFAULT 0, -- How many businesses use this category
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_category_active ON business_categories(is_active);
+CREATE INDEX idx_category_value ON business_categories(value);
+```
+
+#### Admin Users Table
+```sql
+CREATE TABLE admin_users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  full_name VARCHAR(255) NOT NULL,
+  role VARCHAR(50) NOT NULL, -- super_admin, support_admin, finance_admin
+  is_active BOOLEAN DEFAULT TRUE,
+  last_login TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_admin_email ON admin_users(email);
+CREATE INDEX idx_admin_role ON admin_users(role);
+CREATE INDEX idx_admin_active ON admin_users(is_active);
+```
+
+#### Admin Audit Logs Table
+```sql
+CREATE TABLE admin_audit_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  admin_id UUID REFERENCES admin_users(id) ON DELETE SET NULL,
+  admin_email VARCHAR(255) NOT NULL,
+  admin_role VARCHAR(50) NOT NULL,
+  action VARCHAR(255) NOT NULL, -- e.g., 'Updated Coin Settings', 'Suspended User'
+  details TEXT, -- JSON string with additional details
+  ip_address VARCHAR(50),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_audit_admin ON admin_audit_logs(admin_id);
+CREATE INDEX idx_audit_created ON admin_audit_logs(created_at DESC);
+```
+
 ### 5.2 Data Relationships
 
 ```
@@ -724,11 +838,17 @@ users (1) ──────< (many) stock_items
 users (1) ──────< (many) invoices
 users (1) ──────< (many) loans
 users (1) ──────< (many) coin_transactions
+users (1) ──────< (many) support_tickets
 users (1) ──────○ (one) paddy_coins
 users (1) ──────○ (one) user_streaks
 
 stock_items (1) ──────< (many) stock_movements
 loans (1) ──────< (many) loan_payments
+support_tickets (1) ──────< (many) ticket_replies
+admin_users (1) ──────< (many) support_tickets (assigned_to)
+admin_users (1) ──────< (many) ticket_replies
+admin_users (1) ──────< (many) admin_audit_logs
+business_categories (1) ──────< (many) users (via business_type)
 ```
 
 ### 5.3 Data Retention Policy
@@ -1233,6 +1353,218 @@ Response 201:
       "event": "first_loan_application",
       "new_balance": 295
     }
+  }
+}
+```
+
+#### Support Tickets
+
+**Submit Support Ticket**
+```http
+POST /api/v1/support/tickets
+Authorization: Bearer {access_token}
+Content-Type: application/json
+
+{
+  "subject": "Cannot generate invoice",
+  "category": "technical",
+  "priority": "high",
+  "message": "I am trying to create an invoice but the system keeps showing an error.",
+  "email": "ngozi@gmail.com"
+}
+
+Response 201:
+{
+  "success": true,
+  "data": {
+    "ticket": {
+      "id": "ticket_abc123",
+      "ticket_number": "TKT-2026-042",
+      "subject": "Cannot generate invoice",
+      "status": "open",
+      "created_at": "2026-01-07T14:30:00Z"
+    },
+    "message": "Your support ticket has been submitted. We'll respond within 24 hours."
+  }
+}
+```
+
+**Get User's Tickets**
+```http
+GET /api/v1/support/tickets?status=open&limit=20
+Authorization: Bearer {access_token}
+
+Response 200:
+{
+  "success": true,
+  "data": {
+    "tickets": [...],
+    "pagination": {
+      "total": 5,
+      "page": 1,
+      "limit": 20
+    }
+  }
+}
+```
+
+#### Admin Portal APIs
+
+**Admin Login**
+```http
+POST /api/v1/admin/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@smepaddy.com",
+  "password": "admin123"
+}
+
+Response 200:
+{
+  "success": true,
+  "data": {
+    "admin": {
+      "id": "admin_abc123",
+      "email": "admin@smepaddy.com",
+      "full_name": "Super Admin",
+      "role": "super_admin"
+    },
+    "access_token": "eyJhbGci...",
+    "refresh_token": "eyJhbGci..."
+  }
+}
+```
+
+**Get All Support Tickets (Admin)**
+```http
+GET /api/v1/admin/support/tickets?status=open&priority=high&limit=50
+Authorization: Bearer {admin_access_token}
+
+Response 200:
+{
+  "success": true,
+  "data": {
+    "tickets": [...],
+    "stats": {
+      "open": 12,
+      "in_progress": 8,
+      "resolved": 45,
+      "closed": 120
+    }
+  }
+}
+```
+
+**Update Ticket Status (Admin)**
+```http
+PATCH /api/v1/admin/support/tickets/{ticket_id}
+Authorization: Bearer {admin_access_token}
+Content-Type: application/json
+
+{
+  "status": "in_progress",
+  "assigned_to": "admin_xyz789"
+}
+```
+
+**Reply to Ticket (Admin)**
+```http
+POST /api/v1/admin/support/tickets/{ticket_id}/replies
+Authorization: Bearer {admin_access_token}
+Content-Type: application/json
+
+{
+  "message": "Thank you for reporting this. We've identified the issue and will fix it shortly."
+}
+```
+
+#### Business Categories Management (Admin)
+
+**Get All Categories**
+```http
+GET /api/v1/admin/categories
+Authorization: Bearer {admin_access_token}
+
+Response 200:
+{
+  "success": true,
+  "data": {
+    "categories": [
+      {
+        "id": "cat_abc123",
+        "value": "retail",
+        "label": "Retail Shop (Selling to customers)",
+        "is_active": true,
+        "usage_count": 1245,
+        "created_at": "2024-01-01T00:00:00Z"
+      },
+      ...
+    ],
+    "stats": {
+      "total": 21,
+      "active": 21,
+      "total_usage": 5234
+    }
+  }
+}
+```
+
+**Create Business Category (Admin)**
+```http
+POST /api/v1/admin/categories
+Authorization: Bearer {admin_access_token}
+Content-Type: application/json
+
+{
+  "value": "real-estate",
+  "label": "Real Estate & Property"
+}
+
+Response 201:
+{
+  "success": true,
+  "data": {
+    "category": {
+      "id": "cat_new123",
+      "value": "real-estate",
+      "label": "Real Estate & Property",
+      "is_active": true,
+      "usage_count": 0
+    }
+  }
+}
+```
+
+**Update Business Category (Admin)**
+```http
+PATCH /api/v1/admin/categories/{category_id}
+Authorization: Bearer {admin_access_token}
+Content-Type: application/json
+
+{
+  "label": "Real Estate, Property & Land",
+  "is_active": true
+}
+```
+
+**Delete Business Category (Admin)**
+```http
+DELETE /api/v1/admin/categories/{category_id}
+Authorization: Bearer {admin_access_token}
+
+Response 200:
+{
+  "success": true,
+  "message": "Category deleted successfully"
+}
+
+Error 400 (if category in use):
+{
+  "success": false,
+  "error": {
+    "code": "CATEGORY_IN_USE",
+    "message": "Cannot delete category: 123 businesses are using it"
   }
 }
 ```
@@ -1917,5 +2249,6 @@ Shared Business Logic (TypeScript)
 
 **End of Architecture Document**
 
-*Last updated: December 15, 2024*  
-*Next review: March 15, 2025*
+*Last updated: January 7, 2026*  
+*Changes: Added admin portal architecture, support ticket system, business categories management, and related database schemas and API endpoints.*  
+*Next review: April 7, 2026*

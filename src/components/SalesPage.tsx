@@ -67,7 +67,7 @@ export function SalesPage() {
       <div className="px-4 mt-6 mb-6">
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
           <h3 className="text-gray-800 mb-4">This Week</h3>
-          <div className="min-h-[180px]">
+          <div className="min-h-[180px]" style={{ width: '100%', height: '180px' }}>
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={salesData}>
                 <XAxis 
@@ -76,9 +76,7 @@ export function SalesPage() {
                   tickLine={false}
                   tick={{ fill: '#6B7280', fontSize: 12 }}
                 />
-                <YAxis 
-                  hide
-                />
+                <YAxis hide />
                 <Tooltip 
                   cursor={{ fill: 'rgba(59, 130, 246, 0.1)' }}
                   contentStyle={{ 

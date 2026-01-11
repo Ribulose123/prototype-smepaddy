@@ -479,4 +479,3 @@ export function AdminTransactionsPage({ role }: AdminTransactionsPageProps) {
     </div>
   );
 }
-

@@ -25,4 +25,3 @@ export function AdminAccessButton({ onAccessAdmin }: AdminAccessButtonProps) {
     </button>
   );
 }
-

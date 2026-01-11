@@ -440,4 +440,3 @@ export function AdminGamificationPage({ role }: AdminGamificationPageProps) {
     </div>
   );
 }
-

@@ -1,7 +1,15 @@
-import { X, CheckCircle, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Check, Users, CreditCard, X, CheckCircle, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner@2.0.3';
-import { awardCoins } from '../utils/paddyCoinSystem';
+import { AmountInput } from './AmountInput';
+
+// Gamification coin awards
+const awardCoins = (action: string) => {
+  const rewards: { [key: string]: { coins: number; message: string } } = {
+    'sale_recorded': { coins: 10, message: '+10 Paddy Coins! Sale recorded' }
+  };
+  return rewards[action] || { coins: 0, message: '' };
+};
 
 interface QuickProductSaleProps {
   item: any;
@@ -224,15 +232,12 @@ export function QuickProductSale({ item, onBack, onComplete }: QuickProductSaleP
             <div className="mb-5">
               <label className="block text-gray-700 mb-2 text-sm">Amount Paid Now</label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">₦</span>
-                <input
-                  type="number"
+                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 z-10">₦</span>
+                <AmountInput
                   value={partialAmount}
-                  onChange={(e) => setPartialAmount(e.target.value)}
+                  onChange={(val) => setPartialAmount(val)}
                   placeholder="0"
                   className="w-full pl-10 pr-4 py-4 rounded-xl border-2 border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  min="0"
-                  max={totalAmount}
                 />
               </div>
               {partialAmount && parseFloat(partialAmount) > 0 && (

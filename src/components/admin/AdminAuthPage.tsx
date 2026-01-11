@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Eye, EyeOff, Shield } from 'lucide-react';
-import { toast } from 'sonner';
-import Logo from '../assets/logo.png';
+import { toast } from 'sonner@2.0.3';
+import logoImage from 'figma:asset/8ac2e11748528f9d47cdc72ae8c8e1a7740456d8.png';
 
 interface AdminAuthPageProps {
   onLogin: (role: 'super_admin' | 'support_admin' | 'finance_admin') => void;
@@ -49,7 +49,7 @@ export function AdminAuthPage({ onLogin }: AdminAuthPageProps) {
         {/* Logo and Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl shadow-xl mb-4">
-            <img src={Logo} alt="SME Paddy" className="w-14 h-14 object-contain" />
+            <img src={logoImage} alt="SME Paddy" className="w-14 h-14 object-contain" />
           </div>
           <h1 className="text-gray-900 text-2xl font-bold mb-2">SME Paddy Admin</h1>
           <p className="text-gray-600">Secure admin portal access</p>
@@ -120,4 +120,3 @@ export function AdminAuthPage({ onLogin }: AdminAuthPageProps) {
     </div>
   );
 }
-

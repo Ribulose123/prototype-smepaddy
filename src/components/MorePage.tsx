@@ -7,11 +7,18 @@ import {
   User,
   Shield,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  Receipt,
+  ShieldCheck,
+  Download
 } from 'lucide-react';
+import { useState } from 'react';
+import { SupportTicketModal } from './SupportTicketModal';
+import { TransactionStatementModal } from './TransactionStatementModal';
 
 interface MorePageProps {
-  onNavigate: (page: 'invoices' | 'settings' | 'reports') => void;
+  onNavigate: (page: 'invoices' | 'settings' | 'reports' | 'tax') => void;
+  onAccessAdmin?: () => void;
   userProfile: {
     businessName: string;
     ownerName: string;
@@ -19,7 +26,10 @@ interface MorePageProps {
   };
 }
 
-export function MorePage({ onNavigate, userProfile }: MorePageProps) {
+export function MorePage({ onNavigate, onAccessAdmin, userProfile }: MorePageProps) {
+  const [showSupportModal, setShowSupportModal] = useState(false);
+  const [showStatementModal, setShowStatementModal] = useState(false);
+
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
       {/* Header with Profile */}
@@ -87,7 +97,7 @@ export function MorePage({ onNavigate, userProfile }: MorePageProps) {
 
             <button
               onClick={() => onNavigate('reports')}
-              className="w-full flex items-center gap-3 px-4 py-4 active:bg-gray-50 transition-colors"
+              className="w-full flex items-center gap-3 px-4 py-4 active:bg-gray-50 transition-colors border-b border-gray-100"
             >
               <div className="w-11 h-11 bg-green-50 rounded-xl flex items-center justify-center">
                 <BarChart3 className="w-5 h-5 text-green-600" />
@@ -95,6 +105,37 @@ export function MorePage({ onNavigate, userProfile }: MorePageProps) {
               <div className="flex-1 text-left">
                 <p className="text-gray-900 font-medium">Reports</p>
                 <p className="text-gray-500 text-sm">View business insights</p>
+              </div>
+              <ChevronRight className="w-5 h-5 text-gray-400" />
+            </button>
+
+            <button
+              onClick={() => onNavigate('tax')}
+              className="w-full flex items-center gap-3 px-4 py-4 active:bg-gray-50 transition-colors border-b border-gray-100"
+            >
+              <div className="w-11 h-11 bg-orange-50 rounded-xl flex items-center justify-center">
+                <Receipt className="w-5 h-5 text-orange-600" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="text-gray-900 font-medium">Tax Filing</p>
+                <p className="text-gray-500 text-sm">File your business taxes easily</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="bg-orange-100 text-orange-700 text-xs font-semibold px-2 py-0.5 rounded-full">New</span>
+                <ChevronRight className="w-5 h-5 text-gray-400" />
+              </div>
+            </button>
+
+            <button
+              onClick={() => setShowStatementModal(true)}
+              className="w-full flex items-center gap-3 px-4 py-4 active:bg-gray-50 transition-colors"
+            >
+              <div className="w-11 h-11 bg-indigo-50 rounded-xl flex items-center justify-center">
+                <Download className="w-5 h-5 text-indigo-600" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="text-gray-900 font-medium">Transaction Statement</p>
+                <p className="text-gray-500 text-sm">Download your transaction history</p>
               </div>
               <ChevronRight className="w-5 h-5 text-gray-400" />
             </button>
@@ -142,6 +183,7 @@ export function MorePage({ onNavigate, userProfile }: MorePageProps) {
           <h2 className="text-gray-500 text-xs uppercase tracking-wider mb-3 px-2">Support</h2>
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <button
+              onClick={() => setShowSupportModal(true)}
               className="w-full flex items-center gap-3 px-4 py-4 active:bg-gray-50 transition-colors border-b border-gray-100"
             >
               <div className="w-11 h-11 bg-green-50 rounded-xl flex items-center justify-center">
@@ -155,7 +197,7 @@ export function MorePage({ onNavigate, userProfile }: MorePageProps) {
             </button>
 
             <button
-              className="w-full flex items-center gap-3 px-4 py-4 active:bg-gray-50 transition-colors"
+              className="w-full flex items-center gap-3 px-4 py-4 active:bg-gray-50 transition-colors border-b border-gray-100"
             >
               <div className="w-11 h-11 bg-blue-50 rounded-xl flex items-center justify-center">
                 <Shield className="w-5 h-5 text-blue-600" />
@@ -166,6 +208,25 @@ export function MorePage({ onNavigate, userProfile }: MorePageProps) {
               </div>
               <ChevronRight className="w-5 h-5 text-gray-400" />
             </button>
+
+            {onAccessAdmin && (
+              <button
+                onClick={onAccessAdmin}
+                className="w-full flex items-center gap-3 px-4 py-4 active:bg-gray-50 transition-colors"
+              >
+                <div className="w-11 h-11 bg-purple-50 rounded-xl flex items-center justify-center">
+                  <ShieldCheck className="w-5 h-5 text-purple-600" />
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="text-gray-900 font-medium">Admin Portal</p>
+                  <p className="text-gray-500 text-sm">Access admin dashboard</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="bg-purple-100 text-purple-700 text-xs font-semibold px-2 py-0.5 rounded-full">Staff</span>
+                  <ChevronRight className="w-5 h-5 text-gray-400" />
+                </div>
+              </button>
+            )}
           </div>
         </div>
 
@@ -175,6 +236,20 @@ export function MorePage({ onNavigate, userProfile }: MorePageProps) {
           <p className="text-gray-400 text-xs mt-1">© 2024 All rights reserved</p>
         </div>
       </div>
+
+      {/* Support Ticket Modal */}
+      <SupportTicketModal
+        isOpen={showSupportModal}
+        onClose={() => setShowSupportModal(false)}
+        userProfile={userProfile}
+      />
+
+      {/* Transaction Statement Modal */}
+      <TransactionStatementModal
+        isOpen={showStatementModal}
+        onClose={() => setShowStatementModal(false)}
+        userProfile={userProfile}
+      />
     </div>
   );
 }

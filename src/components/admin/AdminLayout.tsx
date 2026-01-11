@@ -19,7 +19,7 @@ import { AdminSupportPage } from './AdminSupportPage';
 import { AdminSettingsPage } from './AdminSettingsPage';
 import { AdminBusinessCategoriesPage } from './AdminBusinessCategoriesPage';
 import { toast } from 'sonner@2.0.3';
-import logoImage from '../../assets/8ac2e11748528f9d47cdc72ae8c8e1a7740456d8.png';
+import logoImage from 'figma:asset/8ac2e11748528f9d47cdc72ae8c8e1a7740456d8.png';
 
 type AdminPage = 'dashboard' | 'users' | 'transactions' | 'gamification' | 'support' | 'settings' | 'categories';
 
@@ -187,4 +187,3 @@ export function AdminLayout({ role, onLogout }: AdminLayoutProps) {
     </div>
   );
 }
-

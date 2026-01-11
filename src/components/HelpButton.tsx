@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
 import { HelpCircle } from 'lucide-react';
-import { SupportTicketModal } from './modal/SupportTicketModal';
+import { useState } from 'react';
+import { SupportTicketModal } from './SupportTicketModal';
 
 interface HelpButtonProps {
   userProfile: {
@@ -35,4 +35,3 @@ export function HelpButton({ userProfile }: HelpButtonProps) {
     </>
   );
 }
-

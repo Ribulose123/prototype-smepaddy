@@ -534,4 +534,3 @@ export function TaxFilingPage({ onBack }: TaxFilingPageProps) {
     </div>
   );
 }
-

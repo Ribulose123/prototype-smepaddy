@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Phone, Lock, ArrowRight, Sparkles, Zap, Shield, TrendingUp, CheckCircle2, Users, Coins as CoinsIcon } from 'lucide-react';
-import { toast } from 'sonner';
-import Logo from '../assets/logo.png';
-
+import { toast } from 'sonner@2.0.3';
+import logoImage from 'figma:asset/8ac2e11748528f9d47cdc72ae8c8e1a7740456d8.png';
+import { NetworkGridPattern } from './NetworkGridPattern';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface AuthPageProps {
   onLogin: () => void;
@@ -108,7 +109,13 @@ export function AuthPage({ onLogin }: AuthPageProps) {
   // Welcome Screen - OPay Style
   if (screen === 'welcome') {
     return (
-      <div className="min-h-screen bg-white">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0, x: -50 }}
+        transition={{ duration: 0.3 }}
+        className="min-h-screen bg-white"
+      >
         {/* Hero Section */}
         <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 overflow-hidden">
           {/* Network Grid Watermark - Subtle SVG Pattern */}
@@ -145,7 +152,7 @@ export function AuthPage({ onLogin }: AuthPageProps) {
             {/* Logo */}
             <div className="flex items-center gap-3 mb-12">
               <div className="w-12 h-12 bg-white rounded-2xl shadow-lg flex items-center justify-center">
-                <img src={Logo} alt="SME Paddy" className="w-10 h-10 object-contain" />
+                <img src={logoImage} alt="SME Paddy" className="w-10 h-10 object-contain" />
               </div>
               <span className="text-white text-xl font-bold">SME Paddy</span>
             </div>
@@ -445,7 +452,7 @@ export function AuthPage({ onLogin }: AuthPageProps) {
           <div className="max-w-6xl mx-auto">
             <div className="flex items-center gap-3 mb-8 lg:mb-12">
               <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
-                <img src={Logo} alt="SME Paddy" className="w-8 h-8 object-contain" />
+                <img src={logoImage} alt="SME Paddy" className="w-8 h-8 object-contain" />
               </div>
               <span className="text-white text-lg font-bold">SME Paddy</span>
             </div>
@@ -496,25 +503,54 @@ export function AuthPage({ onLogin }: AuthPageProps) {
             </div>
           </div>
         </footer>
-      </div>
+      </motion.div>
     );
   }
 
   // Phone Number Screen
   if (screen === 'phone') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-700 flex flex-col">
+      <motion.div 
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 50 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-700 flex flex-col"
+      >
         {/* Header */}
-        <div className="p-6 text-center">
-          <div className="w-16 h-16 bg-white rounded-2xl shadow-lg mx-auto mb-4 flex items-center justify-center">
+        <motion.div 
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.1, duration: 0.3 }}
+          className="p-6 text-center relative"
+        >
+          {/* Back button */}
+          <button
+            onClick={() => setScreen('welcome')}
+            className="absolute left-6 top-6 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+          >
+            <ArrowRight className="w-6 h-6 text-white transform rotate-180" />
+          </button>
+          
+          <motion.div 
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            className="w-16 h-16 bg-white rounded-2xl shadow-lg mx-auto mb-4 flex items-center justify-center"
+          >
             <Phone className="w-8 h-8 text-blue-600" />
-          </div>
+          </motion.div>
           <h2 className="text-white text-2xl mb-2">Enter Your Phone Number</h2>
           <p className="text-blue-100">We'll send you a verification code</p>
-        </div>
+        </motion.div>
 
         {/* Form */}
-        <div className="flex-1 bg-white rounded-t-3xl p-6">
+        <motion.div 
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.3 }}
+          className="flex-1 bg-white rounded-t-3xl p-6"
+        >
           <form onSubmit={handlePhoneSubmit} className="max-w-md mx-auto mt-8">
             <label className="block text-gray-700 mb-3 font-semibold">Phone Number</label>
             <div className="relative mb-2">
@@ -555,8 +591,8 @@ export function AuthPage({ onLogin }: AuthPageProps) {
               Continue
             </button>
           </form>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     );
   }
 

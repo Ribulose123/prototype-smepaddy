@@ -1,8 +1,8 @@
 # Product Requirements Document (PRD)
 ## SME Paddy - Business Management Dashboard for Nigerian Micro & Small Businesses
 
-**Version:** 1.0  
-**Last Updated:** December 15, 2024  
+**Version:** 2.0  
+**Last Updated:** January 7, 2026  
 **Document Owner:** Product Team  
 **Status:** Active Development
 
@@ -574,6 +574,57 @@ SME Paddy provides:
   - Currency (₦ default, $ future)
   - Data backup/restore
   - Account deletion
+
+#### FR-015: Support Ticket System (User-Facing)
+- **Priority:** P1 (High)
+- **Description:** Allow users to submit support requests directly from the app
+- **Requirements:**
+  - Support ticket submission form accessible from More page and floating help button (desktop)
+  - Auto-filled business and owner information
+  - Required fields: Contact email, subject, category, priority, message
+  - Categories: Technical Issue, Billing & Payment, Loan Inquiry, Account Problem, Feature Request, Need Training/Help, Other
+  - Priority levels: Low, Medium, High, Urgent
+  - Unique ticket number generation (TKT-YYYY-XXX format)
+  - Success confirmation with ticket number
+  - 24-hour response time messaging
+  - Mobile and desktop responsive design
+  - Floating help button on desktop view (bottom-right corner)
+
+#### FR-016: Admin Portal
+- **Priority:** P0 (Critical for Operations)
+- **Description:** Comprehensive administrative dashboard for platform management
+- **Access:**
+  - Desktop sidebar: "Admin Portal" button below user profile
+  - Mobile: More page → Support section → "Admin Portal"
+  - Direct URL access: `/admin`
+  - Role-based authentication (Super Admin, Support Admin, Finance Admin)
+- **Features:**
+  - **Dashboard:** Platform statistics, user growth, revenue metrics, system health
+  - **Users & Businesses:** User management, business profiles, account actions (suspend/activate)
+  - **Transactions:** Transaction monitoring, filtering, analytics
+  - **Gamification Controls:** Configure coin rewards, tier requirements, loan limits
+  - **Support Desk:** View and respond to support tickets, filter by status/priority
+  - **Business Categories Management:** Add, edit, activate/deactivate business categories
+  - **Settings:** Platform settings, security, notifications, audit logs
+- **Role-Based Access Control:**
+  - Super Admin: Full access to all features
+  - Support Admin: Dashboard, Users, Support Desk, Business Categories (view-only)
+  - Finance Admin: Dashboard, Transactions, Gamification, Business Categories (view-only)
+
+#### FR-017: Business Categories Management (Admin)
+- **Priority:** P1 (High)
+- **Description:** Admin interface to manage business categories shown during user onboarding
+- **Requirements:**
+  - View all business categories with usage statistics
+  - Add new categories (value and display label)
+  - Edit existing categories (inline editing)
+  - Toggle category active/inactive status
+  - Delete categories (only if no users assigned)
+  - Search and filter categories
+  - Usage protection (cannot deactivate/delete categories in use)
+  - Statistics dashboard (total categories, active count, total usage)
+  - View-only access for Support and Finance Admins
+  - Full management access for Super Admins only
 
 ---
 
@@ -1732,6 +1783,7 @@ Target: 60% of registered users record ≥1 transaction per day within 30 days o
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | Dec 15, 2024 | Product Team | Initial PRD - MVP specification |
+| 2.0 | Jan 7, 2026 | Product Team | Added FR-015 (Support Ticket System), FR-016 (Admin Portal), FR-017 (Business Categories Management) |
 
 ---
 

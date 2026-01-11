@@ -32,12 +32,24 @@ export function ProfileSetupPage({ onComplete }: ProfileSetupPageProps) {
   const businessTypes = [
     { value: 'retail', label: 'Retail Shop (Selling to customers)' },
     { value: 'wholesale', label: 'Wholesale (Selling in bulk)' },
-    { value: 'services', label: 'Services (Hair, Repair, etc.)' },
-    { value: 'food', label: 'Food & Drinks' },
+    { value: 'services', label: 'Services (Hair, Repair, Consulting)' },
+    { value: 'food', label: 'Food & Drinks (Restaurant, Catering)' },
     { value: 'fashion', label: 'Fashion & Tailoring' },
     { value: 'electronics', label: 'Electronics & Phones' },
-    { value: 'agriculture', label: 'Farm Products' },
+    { value: 'agriculture', label: 'Farm Products & Agribusiness' },
     { value: 'transport', label: 'Transport & Logistics' },
+    { value: 'automotive', label: 'Car Sales & Auto Parts' },
+    { value: 'construction', label: 'Building & Construction' },
+    { value: 'real-estate', label: 'Real Estate & Property' },
+    { value: 'health', label: 'Healthcare & Pharmacy' },
+    { value: 'education', label: 'Education & Training' },
+    { value: 'beauty', label: 'Beauty & Personal Care' },
+    { value: 'hospitality', label: 'Hotel & Hospitality' },
+    { value: 'manufacturing', label: 'Manufacturing & Production' },
+    { value: 'technology', label: 'Tech & Digital Services' },
+    { value: 'printing', label: 'Printing & Publishing' },
+    { value: 'furniture', label: 'Furniture & Home Goods' },
+    { value: 'event', label: 'Event Planning & Entertainment' },
     { value: 'other', label: 'Other Business' }
   ];
 
