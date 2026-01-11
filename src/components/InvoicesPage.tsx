@@ -1,6 +1,6 @@
 import { Plus, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { useState } from 'react';
-import { CreateInvoiceModal } from './CreateInvoiceModal';
+import { CreateInvoiceModal } from './modal/CreateInvoiceModal';
 import { NetworkGridPattern } from './NetworkGridPattern';
 
 const invoices = [

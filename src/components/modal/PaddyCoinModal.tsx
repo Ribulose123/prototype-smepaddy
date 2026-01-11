@@ -1,6 +1,7 @@
+import React from 'react';
 import { X, Coins, Gift, Trophy, Lock } from 'lucide-react';
-import { REDEMPTION_OPTIONS, COIN_REWARDS, calculateLevel, canRedeem } from '../utils/paddyCoinSystem';
-import { toast } from 'sonner@2.0.3';
+import { REDEMPTION_OPTIONS, COIN_REWARDS, calculateLevel, canRedeem } from '../../utils/paddyCoinSystem';
+import { toast } from 'sonner';
 
 interface PaddyCoinModalProps {
   coins: number;
@@ -154,3 +155,4 @@ export function PaddyCoinModal({ coins, totalEarned, onClose }: PaddyCoinModalPr
     </div>
   );
 }
+

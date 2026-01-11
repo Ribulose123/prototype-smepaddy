@@ -1,6 +1,6 @@
 import { CheckCircle, Coins, Lock, TrendingUp, Zap, ArrowRight, Gift, Trophy, ChevronRight, Star } from 'lucide-react';
 import { useState } from 'react';
-import { LoanApplicationModal } from './LoanApplicationModal';
+import { LoanApplicationModal } from './modal/LoanApplicationModal';
 import { getLoanTier, getNextLoanTier, LOAN_TIERS } from '../utils/loanSystem';
 import { NetworkGridPattern } from './NetworkGridPattern';
 

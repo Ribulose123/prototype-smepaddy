@@ -10,8 +10,8 @@ import { ProfileSetupPage } from './components/ProfileSetupPage';
 import { SettingsPage } from './components/SettingsPage';
 import { ReportsPage } from './components/ReportsPage';
 import { MorePage } from './components/MorePage';
-import { Toaster } from 'sonner@2.0.3';
-import logoImage from 'figma:asset/8ac2e11748528f9d47cdc72ae8c8e1a7740456d8.png';
+import { Toaster } from 'sonner';
+import Logo from './assets/logo.png';
 
 type Page = 'home' | 'transactions' | 'stock' | 'loans' | 'more' | 'invoices' | 'settings' | 'reports';
 
@@ -103,7 +103,7 @@ export default function App() {
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                <img src={logoImage} alt="SME Paddy" className="w-8 h-8 object-contain" />
+                <img src={Logo} alt="SME Paddy" className="w-8 h-8 object-contain" />
               </div>
               <div>
                 <h1 className="text-gray-900 font-bold">SME Paddy</h1>

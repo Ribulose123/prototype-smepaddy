@@ -1,5 +1,5 @@
 import { X, Calculator, AlertCircle } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 interface LoanApplicationModalProps {
   maxAmount: number;
@@ -226,3 +226,4 @@ export function LoanApplicationModal({ maxAmount, recommendedAmount, interestRat
     </div>
   );
 }
+

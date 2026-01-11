@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Phone, Lock, ArrowRight, Sparkles, Zap, Shield, TrendingUp, CheckCircle2, Users, Coins as CoinsIcon } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
-import logoImage from 'figma:asset/8ac2e11748528f9d47cdc72ae8c8e1a7740456d8.png';
-import { NetworkGridPattern } from './NetworkGridPattern';
+import { toast } from 'sonner';
+import Logo from '../assets/logo.png';
+
 
 interface AuthPageProps {
   onLogin: () => void;
@@ -145,7 +145,7 @@ export function AuthPage({ onLogin }: AuthPageProps) {
             {/* Logo */}
             <div className="flex items-center gap-3 mb-12">
               <div className="w-12 h-12 bg-white rounded-2xl shadow-lg flex items-center justify-center">
-                <img src={logoImage} alt="SME Paddy" className="w-10 h-10 object-contain" />
+                <img src={Logo} alt="SME Paddy" className="w-10 h-10 object-contain" />
               </div>
               <span className="text-white text-xl font-bold">SME Paddy</span>
             </div>
@@ -445,7 +445,7 @@ export function AuthPage({ onLogin }: AuthPageProps) {
           <div className="max-w-6xl mx-auto">
             <div className="flex items-center gap-3 mb-8 lg:mb-12">
               <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
-                <img src={logoImage} alt="SME Paddy" className="w-8 h-8 object-contain" />
+                <img src={Logo} alt="SME Paddy" className="w-8 h-8 object-contain" />
               </div>
               <span className="text-white text-lg font-bold">SME Paddy</span>
             </div>

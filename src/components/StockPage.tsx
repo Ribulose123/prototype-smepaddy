@@ -1,6 +1,6 @@
 import { Plus, Search, AlertCircle, Package } from 'lucide-react';
 import { useState } from 'react';
-import { AddItemModal } from './AddItemModal';
+import { AddItemModal } from './modal/AddItemModal';
 import { NetworkGridPattern } from './NetworkGridPattern';
 
 const stockItems = [

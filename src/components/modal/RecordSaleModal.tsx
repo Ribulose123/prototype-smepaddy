@@ -1,5 +1,5 @@
 import { X, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface RecordSaleModalProps {
   onClose: () => void;
@@ -254,3 +254,4 @@ export function RecordSaleModal({ onClose }: RecordSaleModalProps) {
     </div>
   );
 }
+

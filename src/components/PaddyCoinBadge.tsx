@@ -1,6 +1,6 @@
+import React, { useState } from 'react';
 import { Coins, TrendingUp } from 'lucide-react';
-import { useState } from 'react';
-import { PaddyCoinModal } from './PaddyCoinModal';
+import { PaddyCoinModal } from './modal/PaddyCoinModal';
 
 interface PaddyCoinBadgeProps {
   coins: number;

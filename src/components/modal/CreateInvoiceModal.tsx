@@ -1,5 +1,5 @@
+import React, { useState } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
-import { useState } from 'react';
 
 interface InvoiceItem {
   id: number;
@@ -173,3 +173,4 @@ export function CreateInvoiceModal({ onClose }: CreateInvoiceModalProps) {
     </div>
   );
 }
+

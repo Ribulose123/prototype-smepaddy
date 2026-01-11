@@ -1,6 +1,6 @@
+import React, { useState } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
-import { useState } from 'react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface AddItemModalProps {
   onClose: () => void;
