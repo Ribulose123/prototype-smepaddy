@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, Wallet, Package, Banknote, MoreHorizontal, FileText, Settings as SettingsIcon, ShieldCheck, BarChart3, Receipt } from 'lucide-react';
 import { HomePage } from './components/HomePage';
 import { TransactionsPage } from './components/TransactionsPage';
@@ -15,16 +16,17 @@ import { AdminAuthPage } from './components/admin/AdminAuthPage';
 import { AdminLayout } from './components/admin/AdminLayout';
 import { AdminAccessButton } from './components/AdminAccessButton';
 import { HelpButton } from './components/HelpButton';
-import { Toaster } from 'sonner@2.0.3';
+import { Toaster } from 'sonner';
 import logoImage from 'figma:asset/8ac2e11748528f9d47cdc72ae8c8e1a7740456d8.png';
 
 type Page = 'home' | 'transactions' | 'stock' | 'loans' | 'more' | 'invoices' | 'settings' | 'reports' | 'tax';
 type AdminRole = 'super_admin' | 'support_admin' | 'finance_admin';
 
 export default function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [hasCompletedProfile, setHasCompletedProfile] = useState(false);
-  const [currentPage, setCurrentPage] = useState<Page>('home');
   
   // Admin state
   const [isAdminMode, setIsAdminMode] = useState(false);
@@ -38,12 +40,49 @@ export default function App() {
     businessLogo: null
   };
   
+  // Get current page from URL
+  const getPageFromPath = (path: string): Page => {
+    const pathMap: Record<string, Page> = {
+      '/': 'home',
+      '/home': 'home',
+      '/transactions': 'transactions',
+      '/stock': 'stock',
+      '/loans': 'loans',
+      '/more': 'more',
+      '/invoices': 'invoices',
+      '/settings': 'settings',
+      '/reports': 'reports',
+      '/tax': 'tax',
+    };
+    return pathMap[path] || 'home';
+  };
+
+  const currentPage = getPageFromPath(location.pathname);
+  
+  // Sync URL when page changes
+  const setCurrentPage = (page: Page) => {
+    const pathMap: Record<Page, string> = {
+      'home': '/',
+      'transactions': '/transactions',
+      'stock': '/stock',
+      'loans': '/loans',
+      'more': '/more',
+      'invoices': '/invoices',
+      'settings': '/settings',
+      'reports': '/reports',
+      'tax': '/tax',
+    };
+    navigate(pathMap[page] || '/');
+  };
+  
   // Check if accessing admin URL on mount
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.location.pathname === '/admin') {
+    if (location.pathname === '/admin') {
+      setIsAdminMode(true);
+    } else if (location.pathname.startsWith('/admin')) {
       setIsAdminMode(true);
     }
-  }, []);
+  }, [location.pathname]);
   
   // Admin portal
   if (isAdminMode) {
@@ -68,6 +107,7 @@ export default function App() {
             setIsAdminAuthenticated(false);
             setAdminRole(null);
             setIsAdminMode(false);
+            navigate('/');
           }} 
         />
       </>
@@ -78,7 +118,7 @@ export default function App() {
   const handleLogout = () => {
     setIsAuthenticated(false);
     setHasCompletedProfile(false);
-    setCurrentPage('home');
+    navigate('/');
   };
 
   // Handle navigation from More page
@@ -119,13 +159,16 @@ export default function App() {
       case 'more':
         return <MorePage 
           onNavigate={(page) => setCurrentPage(page)} 
-          onAccessAdmin={() => setIsAdminMode(true)}
+          onAccessAdmin={() => {
+            setIsAdminMode(true);
+            navigate('/admin');
+          }}
           userProfile={userProfile} 
         />;
       case 'invoices':
         return <InvoicesPage />;
       case 'settings':
-        return <SettingsPage onBack={() => setCurrentPage('more')} />;
+        return <SettingsPage onBack={() => setCurrentPage('more')} onLogout={handleLogout} />;
       case 'reports':
         return <ReportsPage />;
       case 'tax':
@@ -210,7 +253,10 @@ export default function App() {
             
             {/* Admin Access Button */}
             <button
-              onClick={() => setIsAdminMode(true)}
+              onClick={() => {
+                setIsAdminMode(true);
+                navigate('/admin');
+              }}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-purple-50 hover:bg-purple-100 transition-all group"
             >
               <ShieldCheck className="w-5 h-5 text-purple-600" />

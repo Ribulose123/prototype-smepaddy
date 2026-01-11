@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Users, 
@@ -31,8 +32,48 @@ interface AdminLayoutProps {
 }
 
 export function AdminLayout({ role, onLogout }: AdminLayoutProps) {
-  const [currentPage, setCurrentPage] = useState<AdminPage>('dashboard');
+  const navigate = useNavigate();
+  const location = useLocation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  // Get current page from URL
+  const getPageFromPath = (path: string): AdminPage => {
+    const pathMap: Record<string, AdminPage> = {
+      '/admin': 'dashboard',
+      '/admin/': 'dashboard',
+      '/admin/dashboard': 'dashboard',
+      '/admin/users': 'users',
+      '/admin/transactions': 'transactions',
+      '/admin/gamification': 'gamification',
+      '/admin/support': 'support',
+      '/admin/settings': 'settings',
+      '/admin/categories': 'categories',
+    };
+    return pathMap[path] || 'dashboard';
+  };
+
+  const currentPage = getPageFromPath(location.pathname);
+  
+  // Sync URL when page changes
+  const setCurrentPage = (page: AdminPage) => {
+    const pathMap: Record<AdminPage, string> = {
+      'dashboard': '/admin/dashboard',
+      'users': '/admin/users',
+      'transactions': '/admin/transactions',
+      'gamification': '/admin/gamification',
+      'support': '/admin/support',
+      'settings': '/admin/settings',
+      'categories': '/admin/categories',
+    };
+    navigate(pathMap[page] || '/admin/dashboard');
+  };
+
+  // Redirect to dashboard if on base /admin route
+  useEffect(() => {
+    if (location.pathname === '/admin' || location.pathname === '/admin/') {
+      navigate('/admin/dashboard', { replace: true });
+    }
+  }, [location.pathname, navigate]);
 
   const handleLogout = () => {
     toast.success('Logged out successfully');
